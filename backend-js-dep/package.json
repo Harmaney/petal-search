@@ -1,0 +1,20 @@
+{
+  "name": "petal-search-engine",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "npx ts-node ./src/app.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.16.1",
+    "@types/node": "^14.0.4",
+    "ts-node": "^10.0.0",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.3"
+  }
+}
