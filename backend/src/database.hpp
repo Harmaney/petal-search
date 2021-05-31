@@ -55,7 +55,7 @@ struct Sqlite {
   }
 
   template <class T>
-  std::string ToString(std::string k, T const& v) {
+  std::string ToString(T const& v) {
     if (v.is_string())
       return v;
     else if (v.is_number_integer())
@@ -67,8 +67,7 @@ struct Sqlite {
   }
 
   Json QueryAll(std::string table) {
-    std::string cond = "";
-    SQLite::Statement query(db, "select * from " + table + " " + cond + ';');
+    SQLite::Statement query(db, "select * from " + table + ';');
     Json res;
     while (query.executeStep()) {
       Json entry;
@@ -86,27 +85,17 @@ struct Sqlite {
     return res;
   }
 
-  void Modify(std::string table, Json sel, Json m) {
-    std::string cond = "", assign = "";
-    for (auto& [k, v] : sel.items())
-      cond += (cond == "" ? "where " : " and ") + k + "=" +
-              ToString(schema[rowID[k]].type, v);
-    for (auto& [k, v] : m.items())
-      assign += (assign == "" ? "" : ",") + k + "=" +
-                ToString(schema[rowID[k]].type, v);
-    db.exec("update " + table + " set " + assign + ' ' + cond + ';');
-  }
-
   void Insert(std::string table, Json data) {
     std::string keys = "", values = "";
-
     for (auto& [k, v] : data.items()) {
       keys += (keys == "" ? "" : ",") + k;
-      values += (values == "" ? "" : ",") + ToString(schema[rowID[k]].type, v);
-      std::cerr << k << ' ' << v << '\n';
+      values = values + (values == "" ? "" : ",") + "?";
     }
-
-    db.exec("insert into " + table + " (" + keys + ") values(" + values + ");");
+    SQLite::Statement ins(
+        db, "insert into " + table + " (" + keys + ") values(" + values + ");");
+    for (auto& [k, v] : data.items()) ins.bind(k, ToString(v));
+    std::cerr << "a\n";
+    ins.exec();
   }
 };
 
@@ -130,7 +119,7 @@ struct Engine {
   }
 
   void Load() {
-    auto j = sql.Query("ARTS", {});
+    auto j = sql.QueryAll("ARTS");
     for (auto i : j) {
       arts.push_back({i["CONTENT"], i["WEIGHT]"]});
       Json jkws = Json::parse((std::string)i["KEYWORDS"]);
