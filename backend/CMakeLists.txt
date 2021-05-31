@@ -24,4 +24,4 @@ link_libraries(stdc++fs)
 
 add_executable(main src/main.cpp)
 
-target_link_libraries(main sqlite3 pthread)
+target_link_libraries(main sqlite3 pthread -fsanitize=undefined)

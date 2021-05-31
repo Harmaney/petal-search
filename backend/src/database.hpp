@@ -18,24 +18,37 @@ struct Trie {
     Node() : son{} {}
   } * root;
 
-  Trie() : root(new Node) { tot = 0; }
+  Trie() : root(new Node) {}
 
-  int tot;
+  ~Trie() {
+    std::function<void(Node*)> Free = [&](Node* x) {
+      for (int i = 0; i < SPLIT_STEP; ++i)
+        if (x->son[i]) Free(x->son[i]);
+      Free(x);
+    };
+    Free(root);
+  }
 
   void Insert(std::string word, std::pair<size_t, double> art) {
     Node* pos = root;
     for (int i = 0; i < word.length(); ++i) {
       assert((uint8_t)word[i] == word[i]);
       uint8_t ch = word[i];
-      pos = pos->son[ch] ? pos->son[ch] : (++tot, pos->son[ch] = new Node);
+      pos = pos->son[ch] ? pos->son[ch] : (pos->son[ch] = new Node);
     }
     pos->arts.push_back(art);
   }
 
-  auto const& Query(std::string word) {
+  std::list<std::pair<size_t, double>> const* Query(std::string word) const {
     Node* pos = root;
-    for (int i = 0; i < word.length(); ++i) pos = pos->son[(uint8_t)word[i]];
-    return pos->arts;
+    for (int i = 0; i < word.length(); ++i) {
+      uint8_t ch = word[i];
+      if (pos->son[ch])
+        pos = pos->son[ch];
+      else
+        return nullptr;
+    }
+    return &pos->arts;
   }
 };
 
@@ -87,10 +100,8 @@ struct Engine {
 
   Json KeywordsToJson(KeywordList const& kws) {
     Json jkws = Json::array();
-    for (auto kw : kws) {
-      tr.Insert(kw.word, {arts.size() - 1, kw.weight});
+    for (auto kw : kws)  // 日
       jkws.push_back({{"word", kw.word}, {"weight", kw.weight}});
-    }
     return jkws;
   }
 
@@ -115,14 +126,18 @@ struct Engine {
 
   Json Search(std::string sentence) {
     auto kws = jb.Keywords(sentence);
-    std::vector<double> norms(arts.size());
-    for (size_t i = 0; i < kws.size(); ++i)
-      for (auto const& [id, w] : tr.Query(kws[i].word))
-        norms[id] += w * kws[i].weight;
+    std::cerr << kws << '\n';
+    std::vector<double> norms(arts.size(), 0);
+    for (size_t i = 0; i < kws.size(); ++i) {
+      auto p = tr.Query(kws[i].word);
+      if (p) {
+        for (auto const& [id, w] : *p) norms[id] += w * kws[i].weight;
+      }
+    }
     std::vector<int> rank;
     for (size_t i = 0; i < arts.size(); ++i) {
       norms[i] /= arts[i].w;
-      if (!arts[i].deleted) rank.push_back(i);
+      if (!arts[i].deleted && norms[i] > 0) rank.push_back(i);
     }
     std::sort(rank.begin(), rank.end(),
               [&](int a, int b) -> bool { return norms[a] > norms[b]; });

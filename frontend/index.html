@@ -1,0 +1,142 @@
+<head>
+  <link href="search.css" rel="stylesheet">
+  <title>Sakura Search</title>
+</head>
+
+<body>
+  <main style="height:100vh">
+    <div class="container">
+      <h1>Sakura Search</h1>
+      <h2>What are you looking for?</h2>
+      <div class="search-box">
+        <div class="search-icon"><i class="fa fa-search search-icon"></i></div>
+        <form action="javascript:Search()" class="search-form">
+          <input type="text" placeholder="Search" id="search" autocomplete="off">
+        </form>
+        <svg class="search-border" version="1.1" xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/" x="0px"
+          y="0px" viewBox="0 0 671 111" style="enable-background:new 0 0 671 111;" xml:space="preserve">
+          <path class="border" d="M335.5,108.5h-280c-29.3,0-53-23.7-53-53v0c0-29.3,23.7-53,53-53h280" />
+          <path class="border" d="M335.5,108.5h280c29.3,0,53-23.7,53-53v0c0-29.3-23.7-53-53-53h-280" />
+        </svg>
+        <div class="go-icon"><i class="fa fa-arrow-right"></i></div>
+      </div>
+    </div>
+
+    <!-- Slideshow container -->
+    <div id="nomatch" style="display: none;text-align:center;margin-top:20px">No match found.</div>
+    <div id="search-result" style="visibility: hidden;padding-top:30px">
+      <div class="slideshow-container" style="height:50vh">
+
+        <div id="slides">
+        </div>
+
+        <a class="prev" onclick="plusSlides(-1)" style="left:-40px">&#10094;</a>
+        <a class="next" onclick="plusSlides(1)" style="right:-40px">&#10095;</a>
+      </div>
+
+      <br>
+
+      <!-- The dots/circles -->
+      <div style="text-align:center" id="slides-navi">
+        <span class="dot" onclick="currentSlide(2)"></span>
+        <span class="dot" onclick="currentSlide(3)"></span>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $("#search").focus(function () {
+        $(".search-box").addClass("border-searching");
+        $(".search-icon").addClass("si-rotate");
+      });
+      $("#search").blur(function () {
+        $(".search-box").removeClass("border-searching");
+        $(".search-icon").removeClass("si-rotate");
+      });
+      $("#search").keyup(function () {
+        if ($(this).val().length > 0) {
+          $(".go-icon").addClass("go-in");
+        }
+        else {
+          $(".go-icon").removeClass("go-in");
+        }
+      });
+      $(".go-icon").click(function () {
+        $(".search-form").submit();
+      });
+    });
+
+    let slideIndex;
+
+    function Search() {
+      $.ajax({
+        method: 'GET',
+        dataType: "json",
+        url: 'http://localhost:8848/search',
+        data: { sentence: $("#search").val() },
+        success: (resp) => {
+          if (!resp.results) {
+            $("#nomatch").css("display", "block");
+            $("#search-result").css("visibility", "hidden");
+          } else {
+            $("#nomatch").css("display", "none");
+            $("#search-result").css("visibility", "visible");
+            let slides = "", navi = "";
+            function Format(content) {
+              content = content.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+              for (let w of resp.keywords)
+                content = content.replaceAll(w.word, `<strong><u>${w.word}</u></strong>`);
+              return content;
+            };
+            for (let i = 0; i < resp.results.length; ++i) {
+              slides +=
+                `<div class="mySlides fade">
+                <div class="numbertext" style="text-align:center;width:100%">${i + 1} / ${resp.results.length}</div>
+                <div class="text"><p>${Format(resp.results[i].content)}</p></div>
+              </div>`
+              navi += ` <span class="dot" onclick="currentSlide(${i + 1})"></span> `
+            }
+            $("#slides").html(slides);
+            $("#slides-navi").html(navi);
+            showSlides(slideIndex = 1);
+          }
+        },
+      });
+    }
+
+    // Next/previous
+    function plusSlides(n) {
+      showSlides(slideIndex += n);
+    }
+
+    // Thumbnail image controls
+    function currentSlide(n) {
+      showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+      var i;
+      var slides = document.getElementsByClassName("mySlides");
+      var dots = document.getElementsByClassName("dot");
+      if (n > slides.length) { slideIndex = 1 }
+      if (n < 1) { slideIndex = slides.length }
+      for (i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+      for (i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(" active", "");
+      }
+      slides[slideIndex - 1].style.display = "block";
+      dots[slideIndex - 1].className += " active";
+    }
+
+  </script>
+</body>
+
+<footer>
+
+</footer>

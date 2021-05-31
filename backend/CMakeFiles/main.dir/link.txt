@@ -1,1 +1,1 @@
-/usr/bin/c++  -O2 -g -DNDEBUG  -rdynamic CMakeFiles/main.dir/src/main.cpp.o  -o main -lstdc++fs -lsqlite3 -lpthread 
+/usr/bin/c++  -O2 -g -DNDEBUG  -rdynamic CMakeFiles/main.dir/src/main.cpp.o  -o main -lstdc++fs -lsqlite3 -lpthread -fsanitize=undefined 

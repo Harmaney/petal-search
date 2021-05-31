@@ -6,6 +6,7 @@ int main(int argc, char **argv) {
   httplib::Server svr;
   svr.Get("/search", [&](httplib::Request const &req, httplib::Response &res) {
     auto sts = req.get_param_value("sentence");
+    std::cerr << sts << '\n';
     auto j = db.Search(sts);
     res.set_header("Access-Control-Allow-Origin", "*");
     res.set_header("Cache-Control", "no-cache");
