@@ -11,12 +11,17 @@ project(SQLiteCpp_Example VERSION 2.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
+
+
 # Add SQLite3 C++ wrapper around sqlite3 library (and sqlite3 itself provided for ease of use)
 # Here you can set CMake variables to avoid building Example, as well as cpplint, cppcheck...
 # or set them in the cmake command line (see for instance provided build.bat/build.sh scripts)
 set(SQLITECPP_RUN_CPPCHECK OFF CACHE BOOL "" FORCE)
 set(SQLITECPP_RUN_CPPLINT OFF CACHE BOOL "" FORCE)
 add_subdirectory(third_party/SQLiteCpp)
+link_libraries(stdc++fs)
 
 add_executable(main src/main.cpp)
 

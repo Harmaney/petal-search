@@ -2,11 +2,11 @@
 
 #include "../third_party/cppjieba/Jieba.hpp"
 
-const char *const DICT_PATH = "../third_partycppjieba/dict/jieba.dict.utf8";
-const char *const HMM_PATH = "../third_partycppjieba/dict/hmm_model.utf8";
-const char *const USER_DICT_PATH = "../third_partycppjieba/dict/user.dict.utf8";
-const char *const IDF_PATH = "../third_partycppjieba/dict/idf.utf8";
-const char *const STOP_WORD_PATH = "../third_partycppjieba/dict/stop_words.utf8";
+const char *const DICT_PATH = "third_party/cppjieba/dict/jieba.dict.utf8";
+const char *const HMM_PATH = "third_party/cppjieba/dict/hmm_model.utf8";
+const char *const USER_DICT_PATH = "third_party/cppjieba/dict/user.dict.utf8";
+const char *const IDF_PATH = "third_party/cppjieba/dict/idf.utf8";
+const char *const STOP_WORD_PATH = "third_party/cppjieba/dict/stop_words.utf8";
 
 using KeywordList = std::vector<cppjieba::KeywordExtractor::Word>;
 struct Jieba {
