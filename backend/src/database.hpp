@@ -144,6 +144,7 @@ struct Engine {
     Json j;
     for (auto i : rank) {
       j.push_back({{"content", arts[i].content}, {"norm", norms[i]}});
+      if (j.size() == 20) break;
     }
     return {{"keywords", KeywordsToJson(kws)}, {"results", j}};
   }
