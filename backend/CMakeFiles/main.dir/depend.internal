@@ -24,5 +24,6 @@ CMakeFiles/main.dir/src/main.cpp.o
  /home/ijen/petal-search/backend/third_party/cppjieba/limonp/Logging.hpp
  /home/ijen/petal-search/backend/third_party/cppjieba/limonp/StdExtension.hpp
  /home/ijen/petal-search/backend/third_party/cppjieba/limonp/StringUtil.hpp
+ /home/ijen/petal-search/backend/third_party/httplib.h
  /home/ijen/petal-search/backend/third_party/json.hpp
- /home/ijen/petal-search/backend/third_party/sqlite_modern_cpp.h
+ /home/ijen/petal-search/backend/third_party/sqlite_orm.h

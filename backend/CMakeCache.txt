@@ -241,10 +241,8 @@ SQLITECPP_INCLUDE_SCRIPT:BOOL=ON
 //Add the internal SQLite3 source to the project.
 SQLITECPP_INTERNAL_SQLITE:BOOL=ON
 
-//Run cppcheck C++ static analysis tool.
 SQLITECPP_RUN_CPPCHECK:BOOL=OFF
 
-//Run cpplint.py tool for Google C++ StyleGuide.
 SQLITECPP_RUN_CPPLINT:BOOL=OFF
 
 //Run Doxygen C++ documentation tool.
@@ -433,7 +431,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=3
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

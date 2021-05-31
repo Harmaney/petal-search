@@ -20,9 +20,8 @@ set(CMAKE_BUILD_TYPE RelWithDebInfo)
 # or set them in the cmake command line (see for instance provided build.bat/build.sh scripts)
 set(SQLITECPP_RUN_CPPCHECK OFF CACHE BOOL "" FORCE)
 set(SQLITECPP_RUN_CPPLINT OFF CACHE BOOL "" FORCE)
-add_subdirectory(third_party/SQLiteCpp)
 link_libraries(stdc++fs)
 
 add_executable(main src/main.cpp)
 
-target_link_libraries(main SQLiteCpp)
+target_link_libraries(main sqlite3 pthread)

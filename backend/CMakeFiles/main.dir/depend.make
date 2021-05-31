@@ -23,6 +23,7 @@ CMakeFiles/main.dir/src/main.cpp.o: third_party/cppjieba/limonp/LocalVector.hpp
 CMakeFiles/main.dir/src/main.cpp.o: third_party/cppjieba/limonp/Logging.hpp
 CMakeFiles/main.dir/src/main.cpp.o: third_party/cppjieba/limonp/StdExtension.hpp
 CMakeFiles/main.dir/src/main.cpp.o: third_party/cppjieba/limonp/StringUtil.hpp
+CMakeFiles/main.dir/src/main.cpp.o: third_party/httplib.h
 CMakeFiles/main.dir/src/main.cpp.o: third_party/json.hpp
-CMakeFiles/main.dir/src/main.cpp.o: third_party/sqlite_modern_cpp.h
+CMakeFiles/main.dir/src/main.cpp.o: third_party/sqlite_orm.h
 

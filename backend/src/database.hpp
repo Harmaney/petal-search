@@ -4,7 +4,7 @@
 #include <random>
 
 #include "../third_party/json.hpp"
-#include "../third_party/sqlite_modern_cpp.h"
+#include "../third_party/sqlite_orm.h"
 #include "segmentation.hpp"
 
 using ArticleID = uint32_t;
@@ -18,14 +18,16 @@ struct Trie {
     Node() : son{} {}
   } * root;
 
-  Trie() : root(new Node) {}
+  Trie() : root(new Node) { tot = 0; }
+
+  int tot;
 
   void Insert(std::string word, std::pair<size_t, double> art) {
     Node* pos = root;
     for (int i = 0; i < word.length(); ++i) {
       assert((uint8_t)word[i] == word[i]);
       uint8_t ch = word[i];
-      pos = pos->son[ch] ? pos->son[ch] : (pos->son[ch] = new Node);
+      pos = pos->son[ch] ? pos->son[ch] : (++tot, pos->son[ch] = new Node);
     }
     pos->arts.push_back(art);
   }
@@ -39,64 +41,17 @@ struct Trie {
 
 using Json = nlohmann::json;
 
-struct Sqlite {
-  struct TypeDef {
-    std::string key, type;
-  };
-  using Schema = std::vector<TypeDef>;
-  Schema schema;
-  std::map<std::string, int> rowID;
-  SQLite::Database db;
-
-  Sqlite(std::string fileName, Schema const& schema)
-      : schema(schema), db("db.db") {
-    for (size_t i = 0; i < schema.size(); ++i) rowID[schema[i].key] = i;
-  }
-
-  template <class T>
-  std::string ToString(T const& v) {
-    if (v.is_string())
-      return v;
-    else if (v.is_number_integer())
-      return std::to_string((int)v);
-    else if (v.is_number_float())
-      return std::to_string((double)v);
-    else
-      throw;
-  }
-
-  Json QueryAll(std::string table) {
-    SQLite::Statement query(db, "select * from " + table + ';');
-    Json res;
-    while (query.executeStep()) {
-      Json entry;
-      for (size_t i = 0; i < schema.size(); ++i)
-        if (query.getColumn(i).isText())
-          entry[schema[i].key] = query.getColumn(i);
-        else if (query.getColumn(i).isInteger())
-          entry[schema[i].key] = (int)query.getColumn(i);
-        else if (query.getColumn(i).isFloat())
-          entry[schema[i].key] = (double)query.getColumn(i);
-        else
-          throw;
-      res.push_back(entry);
-    }
-    return res;
-  }
-
-  void Insert(std::string table, Json data) {
-    std::string keys = "", values = "";
-    for (auto& [k, v] : data.items()) {
-      keys += (keys == "" ? "" : ",") + k;
-      values = values + (values == "" ? "" : ",") + "?";
-    }
-    SQLite::Statement ins(
-        db, "insert into " + table + " (" + keys + ") values(" + values + ");");
-    for (auto& [k, v] : data.items()) ins.bind(k, ToString(v));
-    std::cerr << "a\n";
-    ins.exec();
-  }
+struct ArtRec {
+  std::string content;
+  double weight;
+  std::string keywords;
 };
+
+auto database = sqlite_orm::make_storage(
+    "db.db", sqlite_orm::make_table(
+                 "ARTS", sqlite_orm::make_column("CONTENT", &ArtRec::content),
+                 sqlite_orm::make_column("WEIGHT", &ArtRec::weight),
+                 sqlite_orm::make_column("KEYWORDS", &ArtRec::keywords)));
 
 struct Engine {
   struct Article {
@@ -105,25 +60,22 @@ struct Engine {
     bool deleted;
   };
 
-  Sqlite sql;
   Trie tr;
   Jieba jb;
   std::vector<Article> arts;
   int deletedCount;
 
-  Engine()
-      : sql("db.db",
-            {{"CONTENT", "TEXT"}, {"WEIGHT", "REAL"}, {"KEYWORDS", "TEXT"}}) {
-    Load();
-  }
+  Engine() { Load(); }
 
   void Load() {
-    auto j = sql.QueryAll("ARTS");
-    for (auto i : j) {
-      arts.push_back({i["CONTENT"], i["WEIGHT]"]});
-      Json jkws = Json::parse((std::string)i["KEYWORDS"]);
+    auto artRecs = database.get_all<ArtRec>();
+
+    for (auto i : artRecs) {
+      std::cerr << "Loading...\n";
+      arts.push_back({i.content, i.weight});
+      Json jkws = Json::parse((std::string)i.keywords);
       for (auto kw : jkws)
-        tr.Insert(kw["WORD"], {arts.size() - 1, kw["WEIGHT"]});
+        tr.Insert(kw["word"], {arts.size() - 1, kw["weight"]});
     }
   }
 
@@ -133,19 +85,22 @@ struct Engine {
     return sqrt(norm);
   }
 
+  Json KeywordsToJson(KeywordList const& kws) {
+    Json jkws = Json::array();
+    for (auto kw : kws) {
+      tr.Insert(kw.word, {arts.size() - 1, kw.weight});
+      jkws.push_back({{"word", kw.word}, {"weight", kw.weight}});
+    }
+    return jkws;
+  }
+
   void AddEntry(std::string content) {
     auto kws = jb.Keywords(content);
     auto w = sqrt(GetNorm(kws));
     arts.push_back({content, w});
-    Json jkws = Json::array();
-    for (auto kw : kws) {
-      tr.Insert(kw.word, {arts.size() - 1, kw.weight});
-      jkws.push_back({{"WORD", kw.word}, {"WEIGHT", kw.weight}});
-    }
+    Json jkws = KeywordsToJson(kws);
 
-    sql.Insert(
-        "ARTS",
-        {{"CONTENT", content}, {"WEIGHT", w}, {"KEYWORDS", jkws.dump()}});
+    database.insert((ArtRec){content, w, jkws.dump()});
   }
 
   void BatchAddEntry(std::string folder) {
@@ -173,10 +128,9 @@ struct Engine {
               [&](int a, int b) -> bool { return norms[a] > norms[b]; });
     Json j;
     for (auto i : rank) {
-      j.push_back(arts[i].content);
-      std::cerr << arts[i].content << ' ' << arts[i].w << '\n';
+      j.push_back({{"content", arts[i].content}, {"norm", norms[i]}});
     }
-    return j;
+    return {{"keywords", KeywordsToJson(kws)}, {"results", j}};
   }
 
   void Delete(size_t id) {
