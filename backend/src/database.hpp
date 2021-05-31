@@ -1,11 +1,10 @@
-#include <SQLiteCpp/SQLiteCpp.h>
-
 #include <cctype>
 #include <filesystem>
 #include <list>
 #include <random>
 
 #include "../third_party/json.hpp"
+#include "../third_party/sqlite_modern_cpp.h"
 #include "segmentation.hpp"
 
 using ArticleID = uint32_t;

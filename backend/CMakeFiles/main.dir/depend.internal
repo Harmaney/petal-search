@@ -25,11 +25,4 @@ CMakeFiles/main.dir/src/main.cpp.o
  /home/ijen/petal-search/backend/third_party/cppjieba/limonp/StdExtension.hpp
  /home/ijen/petal-search/backend/third_party/cppjieba/limonp/StringUtil.hpp
  /home/ijen/petal-search/backend/third_party/json.hpp
- third_party/SQLiteCpp/include/SQLiteCpp/Assertion.h
- third_party/SQLiteCpp/include/SQLiteCpp/Column.h
- third_party/SQLiteCpp/include/SQLiteCpp/Database.h
- third_party/SQLiteCpp/include/SQLiteCpp/Exception.h
- third_party/SQLiteCpp/include/SQLiteCpp/SQLiteCpp.h
- third_party/SQLiteCpp/include/SQLiteCpp/Statement.h
- third_party/SQLiteCpp/include/SQLiteCpp/Transaction.h
- third_party/SQLiteCpp/include/SQLiteCpp/Utils.h
+ /home/ijen/petal-search/backend/third_party/sqlite_modern_cpp.h

@@ -24,12 +24,5 @@ CMakeFiles/main.dir/src/main.cpp.o: third_party/cppjieba/limonp/Logging.hpp
 CMakeFiles/main.dir/src/main.cpp.o: third_party/cppjieba/limonp/StdExtension.hpp
 CMakeFiles/main.dir/src/main.cpp.o: third_party/cppjieba/limonp/StringUtil.hpp
 CMakeFiles/main.dir/src/main.cpp.o: third_party/json.hpp
-CMakeFiles/main.dir/src/main.cpp.o: third_party/SQLiteCpp/include/SQLiteCpp/Assertion.h
-CMakeFiles/main.dir/src/main.cpp.o: third_party/SQLiteCpp/include/SQLiteCpp/Column.h
-CMakeFiles/main.dir/src/main.cpp.o: third_party/SQLiteCpp/include/SQLiteCpp/Database.h
-CMakeFiles/main.dir/src/main.cpp.o: third_party/SQLiteCpp/include/SQLiteCpp/Exception.h
-CMakeFiles/main.dir/src/main.cpp.o: third_party/SQLiteCpp/include/SQLiteCpp/SQLiteCpp.h
-CMakeFiles/main.dir/src/main.cpp.o: third_party/SQLiteCpp/include/SQLiteCpp/Statement.h
-CMakeFiles/main.dir/src/main.cpp.o: third_party/SQLiteCpp/include/SQLiteCpp/Transaction.h
-CMakeFiles/main.dir/src/main.cpp.o: third_party/SQLiteCpp/include/SQLiteCpp/Utils.h
+CMakeFiles/main.dir/src/main.cpp.o: third_party/sqlite_modern_cpp.h
 
